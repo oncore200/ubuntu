@@ -32,9 +32,23 @@ msg() {
 #  FUNCTIONS
 # ===================================
 
-update_system() {
-    msg info "Updating system..."
+apt_update(){
+    msg info "Updating APT..."
     sudo apt update -y && sudo apt upgrade -y
+}
+
+flatpak_update(){
+   if command -v flatpak &>/dev/null; then
+        msg info "Updating Flatpak..."
+        flatpak update -y
+    fi
+}
+
+snap_update(){
+    if command -v snap &>/dev/null; then
+        msg info "Updating Snap..."
+        sudo snap refresh
+    fi
 }
 
 install_apt() {
@@ -70,19 +84,9 @@ install_flatpak() {
 }
 
 full_update() {
-    msg info "Updating APT..."
-    sudo apt update -y && sudo apt upgrade -y
-
-    if command -v flatpak &>/dev/null; then
-        msg info "Updating Flatpak..."
-        flatpak update -y
-    fi
-
-    if command -v snap &>/dev/null; then
-        msg info "Updating Snap..."
-        sudo snap refresh
-    fi
-
+    apt_update
+    flatpak_update
+    snap_update
 
     echo -ne "${YELLOW}Do you want to exit the program? (y/n): ${RESET}"
     read choice
@@ -114,10 +118,9 @@ reboot_system() {
 }
 
 setup_ubuntu() {
-    update_system
+    apt_update
     install_apt
     install_flatpak
-
 
     echo -ne "${YELLOW}Do you want to exit the program? (y/n): ${RESET}"
     read choice
