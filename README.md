@@ -55,9 +55,17 @@ fupdate, ll, update, clean
    ```bash
    git clone https://github.com/oncore200/ubuntu.git
    cd ubuntu
-chmod +x manage-ubuntu.sh
+   ```
 
-./manage-ubuntu.sh
+2. **Make the Script Executable**
+   ```bash
+   chmod +x manage-ubuntu.sh
+   ```
+3. **Run the Script**
+   ```bash
+   ./manage-ubuntu.sh
+   ```
+## 📋 Menu Options
 
 | Option | Description                         |
 | ------ | ----------------------------------- |
@@ -68,15 +76,13 @@ chmod +x manage-ubuntu.sh
 | 5      | Exit Tool                           |
 
 
-⚠️ Notes
+## ⚠️ Notes
 
-    Aliases are added only if they don't already exist in your shell configuration (.bashrc or .zshrc).
+-Aliases are added only if they don't already exist in your shell configuration (.bashrc or .zshrc).
+-Flatpak and Snap updates are skipped if not installed.
+-Setup Ubuntu checks for missing packages before installing.
 
-    Flatpak and Snap updates are skipped if not installed.
-
-    Setup Ubuntu checks for missing packages before installing.
-
-📜 License
+## 📜 License
 
 This project is released under the MIT License.
 
