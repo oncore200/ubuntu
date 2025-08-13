@@ -28,45 +28,38 @@ FLATPAK_PACKAGES=(
     org.telegram.desktop
 )
 
+CUSTOM_ALIASES=(
+    "refresh='sudo apt update'"
+    "updates='apt list --upgradable'"
+    "upgrade='sudo apt upgrade'"
+    "failed='systemctl --failed'"
+    "flist='flatpak list'"
+    "flistapps='flatpak list --app'"
+    "fupdate='flatpak update'"
+    "ll='ls -la --color=auto'"
+    "update='sudo apt update && sudo apt upgrade -y'"
+    "clean='sudo apt autoremove -y && sudo apt clean'"
+)
+
 #==================== Helper Functions ====================#
-apt_update() {
-    sudo apt update -y && sudo apt upgrade -y
-}
-
-flatpak_update() {
-    flatpak update -y
-}
-
-snap_update() {
-    sudo snap refresh
-}
-
+apt_update() { sudo apt update -y && sudo apt upgrade -y; }
+flatpak_update() { flatpak update -y; }
+snap_update() { sudo snap refresh; }
 setup_flatpak() {
     sudo apt install -y flatpak
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 }
-
-install_apt_packages() {
-    sudo apt install -y "$@"
-}
-
-install_flatpak_packages() {
-    flatpak install -y flathub "$@"
-}
-
+install_apt_packages() { sudo apt install -y "$@"; }
+install_flatpak_packages() { flatpak install -y flathub "$@"; }
 cleaning() {
     sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean
     flatpak remove --unused -y
 }
-
-rebooting() {
-    sudo reboot
-}
+rebooting() { sudo reboot; }
 
 #==================== Utility Functions ====================#
 confirm_action() {
-    local prompt="$1"
-    echo -ne "${YELLOW}${prompt} (y/n): ${RESET}"
+    echo -ne "${YELLOW}$1 (y/n): ${RESET}"
     read ans
     [[ $ans =~ ^[Yy]$ ]]
 }
@@ -105,7 +98,7 @@ full_system_update() {
 
 system_cleaning() {
     if confirm_action "Perform Full System Cleaning. Are you sure?"; then
-        echo -e "${BLUE}Removing unused packages and cleaning system...${RESET}"
+        echo -e "${BLUE}Cleaning system...${RESET}"
         cleaning
         echo -e "${GREEN}Cleanup complete.${RESET}"
     else
@@ -116,6 +109,7 @@ system_cleaning() {
 
 setup_ubuntu() {
     if confirm_action "Setup Your New Ubuntu System. Are you sure?"; then
+
         echo -e "${BLUE}Updating base system...${RESET}"
         apt_update
 
@@ -127,23 +121,32 @@ setup_ubuntu() {
         echo -e "${BLUE}Installing APT software...${RESET}"
         missing_apt=()
         for pkg in "${APT_PACKAGES[@]}"; do
-            if ! dpkg -l | grep -qw "$pkg"; then
-                missing_apt+=("$pkg")
-            fi
+            dpkg -l | grep -qw "$pkg" || missing_apt+=("$pkg")
         done
         [[ ${#missing_apt[@]} -gt 0 ]] && install_apt_packages "${missing_apt[@]}"
 
-        if command -v flatpak &>/dev/null; then
-            echo -e "${BLUE}Installing Flatpak software...${RESET}"
-            missing_flatpak=()
-            for pkg in "${FLATPAK_PACKAGES[@]}"; do
-                if ! flatpak list | grep -qw "$pkg"; then
-                    missing_flatpak+=("$pkg")
-                fi
-            done
-            [[ ${#missing_flatpak[@]} -gt 0 ]] && install_flatpak_packages "${missing_flatpak[@]}"
-        fi
+        echo -e "${BLUE}Installing Flatpak software...${RESET}"
+        missing_flatpak=()
+        for pkg in "${FLATPAK_PACKAGES[@]}"; do
+            flatpak list | grep -qw "$pkg" || missing_flatpak+=("$pkg")
+        done
+        [[ ${#missing_flatpak[@]} -gt 0 ]] && install_flatpak_packages "${missing_flatpak[@]}"
 
+        echo -e "${BLUE}Adding custom aliases...${RESET}"
+        SHELL_RC="$HOME/.bashrc"
+        [[ $SHELL == *zsh ]] && SHELL_RC="$HOME/.zshrc"
+
+        for alias_cmd in "${CUSTOM_ALIASES[@]}"; do
+            alias_name="${alias_cmd%%=*}"
+            if ! grep -Fq "alias $alias_name=" "$SHELL_RC"; then
+                echo "alias ${alias_cmd}" >> "$SHELL_RC"
+                echo -e "${GREEN}Added:${RESET} alias ${alias_cmd}"
+            else
+                echo -e "${YELLOW}Alias already exists:${RESET} alias ${alias_cmd}"
+            fi
+        done
+
+        echo -e "${CYAN}Reload your shell or run: source $SHELL_RC${RESET}"
         echo -e "${GREEN}Ubuntu setup complete.${RESET}"
     else
         echo -e "${RED}Cancelled.${RESET}"
@@ -154,8 +157,8 @@ setup_ubuntu() {
 system_reboot() {
     if confirm_action "Perform System Reboot. Are you sure?"; then
         echo -e "${YELLOW}System will reboot in 10 seconds... Press Ctrl+C to cancel.${RESET}"
-        for i in {10..1}; do
-            echo -ne "${CYAN}Rebooting in $i seconds...\r${RESET}"
+        for ((i=10; i>0; i--)); do
+            echo -ne "${CYAN}Rebooting in $i seconds...    \r${RESET}"
             sleep 1
         done
         echo -e "\n${BLUE}Rebooting now...${RESET}"
