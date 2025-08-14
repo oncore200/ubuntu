@@ -65,6 +65,8 @@ fupdate, ll, update, clean
    ```bash
    ./manage-ubuntu.sh
    ```
+---
+
 ## 📋 Menu Options
 
 | Option | Description                         |
@@ -75,12 +77,15 @@ fupdate, ll, update, clean
 | 4      | Reboot System                       |
 | 5      | Exit Tool                           |
 
+---
 
 ## ⚠️ Notes
 
 -Aliases are added only if they don't already exist in your shell configuration (.bashrc or .zshrc).
 -Flatpak and Snap updates are skipped if not installed.
 -Setup Ubuntu checks for missing packages before installing.
+
+---
 
 ## 📜 License
 
