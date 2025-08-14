@@ -14,5 +14,14 @@ cleaning() {
     sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean
     flatpak remove --unused -y
 }
+confirm_action() {
+    echo -ne "${YELLOW}$1 (y/n): ${RESET}"
+    read ans
+    [[ $ans =~ ^[Yy]$ ]]
+}
 
-rebooting() { sudo reboot; }
+pause_return() {
+    echo -e "${CYAN}Press Enter to return to menu...${RESET}"
+    read
+}
+

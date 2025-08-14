@@ -1,15 +1,13 @@
 #!/bin/bash
 
 # Load utils
-source utils/colors.sh
-source utils/prompts.sh
-source utils/helpers.sh
+source utils/core.sh
+source utils/config.sh
 
 # Load modules
 source modules/update.sh
 source modules/clean.sh
 source modules/setup.sh
-source modules/reboot.sh
 
 while true; do
     clear
@@ -19,8 +17,7 @@ while true; do
     echo -e "${CYAN} 1)${RESET} Perform Full System Update"
     echo -e "${CYAN} 2)${RESET} Perform System Cleaning"
     echo -e "${CYAN} 3)${RESET} Setup Your Freshly Installed Ubuntu System"
-    echo -e "${CYAN} 4)${RESET} Reboot System"
-    echo -e "${CYAN} 5)${RESET} Exit"
+    echo -e "${CYAN} 4)${RESET} Exit"
     echo -e "${MAGENTA}╚════════════════════════════════════════╝${RESET}"
     read -p "Enter your choice: " choice
 
@@ -28,8 +25,7 @@ while true; do
         1) full_system_update ;;
         2) system_cleaning ;;
         3) setup_ubuntu ;;
-        4) system_reboot ;;
-        5) echo -e "${GREEN}Goodbye!${RESET}"; exit 0 ;;
+        4) echo -e "${GREEN}Goodbye!${RESET}"; exit 0 ;;
         *) echo -e "${RED}Invalid choice. Try again.${RESET}"; sleep 1 ;;
     esac
 done
